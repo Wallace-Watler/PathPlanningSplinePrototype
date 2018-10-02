@@ -11,8 +11,8 @@ public class Spline {
 	private static final Color SPLINE_COLOR = Color.CYAN;
 	private static final double T_STEP = 0.001;
 	
-	private List<Point> entireCurve;
-	private List<Point> controlPoints;
+	private final List<Point> entireCurve;
+	private final List<Point> controlPoints;
 	
 	public Spline(Vector startPos, Vector endPos, Vector startDir, Vector endDir) {
 		entireCurve = new ArrayList<Point>();
@@ -70,7 +70,7 @@ public class Spline {
 		}
 	}
 	
-	public class Point implements Cloneable {
+	private class Point implements Cloneable {
 		private Vector position;
 		private Vector direction;
 		private double t;
@@ -79,10 +79,6 @@ public class Spline {
 			position = pos.clone();
 			direction = dir.clone();
 			this.t = t;
-		}
-		
-		public Vector getPosition() {
-			return position;
 		}
 		
 		@Override
