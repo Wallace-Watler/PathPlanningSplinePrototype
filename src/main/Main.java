@@ -18,11 +18,13 @@ public class Main extends Canvas implements Runnable {
 	public static final Color BACKGROUND_COLOR = Color.DARK_GRAY;
 	public static final int HEIGHT = 1024, WIDTH = 1024;
 	
+	public static final double ROBOT_WIDTH = 50;
+	
 	private Thread thread;
 	private boolean running = false;
 	
 	public static List<Obstacle> obstacles;
-	public static Robot robot;
+	public static Spline spline;
 	
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Spline-based path planning");
@@ -67,8 +69,7 @@ public class Main extends Canvas implements Runnable {
 		obstacles = new ArrayList<Obstacle>();
 		obstacles.add(new Obstacle(new Vector(500, 500), 15));
 		
-		robot = new Robot(new Vector(400, 800), new Vector(0, -100));
-		robot.setGoal(new Vector(650, 200), new Vector(0, -100));
+		spline = new Spline(new Vector(400, 800), new Vector(650, 200), new Vector(0, -100), new Vector(0, -100));
 	}
 	
 	public void run() {
@@ -100,7 +101,7 @@ public class Main extends Canvas implements Runnable {
 		GridMap.render(g);
 		for(Obstacle o : obstacles) o.render(g);
 		
-		robot.render(g);
+		spline.render(g);
 		
 		g.dispose();
 		bs.show();

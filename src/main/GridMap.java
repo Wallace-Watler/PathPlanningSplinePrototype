@@ -29,7 +29,7 @@ public class GridMap {
 	
 	public static void registerObstacle(Obstacle o) {
 		Vector location = o.getLocation().clone();
-		double safeDistance = o.getRadius() + Robot.WIDTH;
+		double safeDistance = o.getRadius() + Main.ROBOT_WIDTH;
 		
 		for(int r = 0; r <= OBSTACLE_DEFINITION; r++)
 			for(int theta = 0; theta < OBSTACLE_DEFINITION; theta++) {

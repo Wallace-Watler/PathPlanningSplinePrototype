@@ -9,12 +9,24 @@ public class Vector implements Cloneable {
 		this.y = y;
 	}
 	
+	public Vector negate() {
+		return new Vector(-x, -y);
+	}
+	
 	public Vector add(Vector v) {
 		return new Vector(x + v.x, y + v.y);
 	}
 	
+	public Vector subtract(Vector v) {
+		return this.add(v.negate());
+	}
+	
 	public Vector multiply(double d) {
 		return new Vector(d * x, d * y);
+	}
+	
+	public Vector divide(double d) {
+		return this.multiply(1 / d);
 	}
 	
 	@Override

@@ -32,63 +32,70 @@ public class Spline {
 		}
 	}
 	
+	private void runAlgorithm() {
+		
+	}
+	
 	private void calculateEntireCurve() {
 		entireCurve.clear();
 		int curveIndex = 0;
 		
 		//Looking at every control point in pairs
-		Point prevControlPoint = controlPoints.get(0);
+		Point prevControlPoint = null;
 		for(Point controlPoint : controlPoints) {
-			entireCurve.add(prevControlPoint);
-			
-			Vector prevPosition = prevControlPoint.position.clone();
-			Vector prevDirection = prevControlPoint.direction.clone();
-			Vector nextPosition = controlPoint.position.clone();
-			Vector nextDirection = controlPoint.direction.clone();
-			double scaledT, scaledTSqr, scaledTCube, prevControlT, lastCurveT;
-			//For every t between the previous control point and the next control point, going by T_STEP
-			for(Point lastCurvePoint = entireCurve.get(curveIndex).clone(); controlPoint.t - lastCurvePoint.t > T_STEP; curveIndex++, lastCurvePoint = entireCurve.get(curveIndex).clone()) {
-				lastCurveT = lastCurvePoint.t;
-				prevControlT = prevControlPoint.t;
-				scaledT = (lastCurveT - prevControlT) / (controlPoint.t - prevControlT);
-				scaledTSqr = scaledT * scaledT;
-				scaledTCube = scaledTSqr * scaledT;
-				//Add new point based on Hermite spline
-				Vector newPosition = prevPosition.multiply(2 * scaledTCube - 3 * scaledTSqr + 1)
-										.add(prevDirection.multiply(scaledTCube - 2 * scaledTSqr + scaledT))
-										.add(nextPosition.multiply(-2 * scaledTCube + 3 * scaledTSqr))
-										.add(nextDirection.multiply(scaledTCube - scaledTSqr));
-				Vector newDirection = prevPosition.multiply(6 * scaledTSqr - 6 * scaledT)
-										.add(prevDirection.multiply(3 * scaledTSqr - 4 * scaledT + 1))
-										.add(nextPosition.multiply(-6 * scaledTSqr + 6 * scaledT))
-										.add(nextDirection.multiply(3 * scaledTSqr - 2 * scaledT));
-				entireCurve.add(new Point(newPosition, newDirection, lastCurveT + T_STEP));
+			if(prevControlPoint != null) {
+				entireCurve.add(prevControlPoint);
+				
+				Vector prevPosition = prevControlPoint.position.clone();
+				Vector prevVelocity = prevControlPoint.velocity.clone();
+				Vector nextPosition = controlPoint.position.clone();
+				Vector nextVelocity = controlPoint.velocity.clone();
+				double scaledT, scaledTSqr, scaledTCube, prevControlT, thisCurveT;
+				//For every t between the previous control point and the next control point, going by T_STEP
+				for(Point lastCurvePoint = entireCurve.get(curveIndex).clone(); controlPoint.t - lastCurvePoint.t > T_STEP; curveIndex++, lastCurvePoint = entireCurve.get(curveIndex).clone()) {
+					thisCurveT = lastCurvePoint.t + T_STEP;
+					prevControlT = prevControlPoint.t;
+					scaledT = (thisCurveT - prevControlT) / (controlPoint.t - prevControlT);
+					scaledTSqr = scaledT * scaledT;
+					scaledTCube = scaledTSqr * scaledT;
+					//Add new point based on Hermite spline
+					Vector newPosition = prevPosition.multiply(2 * scaledTCube - 3 * scaledTSqr + 1)
+											.add(prevVelocity.multiply(scaledTCube - 2 * scaledTSqr + scaledT))
+											.add(nextPosition.multiply(-2 * scaledTCube + 3 * scaledTSqr))
+											.add(nextVelocity.multiply(scaledTCube - scaledTSqr));
+					Vector newVelocity = prevPosition.multiply(6 * scaledTSqr - 6 * scaledT)
+											.add(prevVelocity.multiply(3 * scaledTSqr - 4 * scaledT + 1))
+											.add(nextPosition.multiply(-6 * scaledTSqr + 6 * scaledT))
+											.add(nextVelocity.multiply(3 * scaledTSqr - 2 * scaledT));
+					Point newPoint = new Point(newPosition, newVelocity, thisCurveT);
+					entireCurve.add(newPoint);
+					//If at the final point, add last control point to the curve
+					if(newPoint.t >= 1 - T_STEP) entireCurve.add(controlPoint.clone());
+				}
 			}
-			//If at the final control point, add it to the curve
-			if(controlPoint.t == 1) entireCurve.add(controlPoint.clone());
 			prevControlPoint = controlPoint.clone();
 		}
 	}
 	
 	private class Point implements Cloneable {
 		private Vector position;
-		private Vector direction;
+		private Vector velocity;
 		private double t;
 		
-		public Point(Vector pos, Vector dir, double t) {
+		public Point(Vector pos, Vector vel, double t) {
 			position = pos.clone();
-			direction = dir.clone();
+			velocity = vel.clone();
 			this.t = t;
 		}
 		
 		@Override
 		public Point clone() {
-			return new Point(position.clone(), direction.clone(), t);
+			return new Point(position.clone(), velocity.clone(), t);
 		}
 		
 		@Override
 		public String toString() {
-			return "Pos: " + position + "\nDir: " + direction + "\nt: " + t;
+			return "Pos: " + position + "\nDir: " + velocity + "\nt: " + t;
 		}
 	}
 }
