@@ -33,7 +33,28 @@ public class Spline {
 	}
 	
 	private void runAlgorithm() {
-		
+		Tuple<Point, Point> collision = findFirstCollision();
+		if(collision != null) {
+			//createControlPointMidway();
+			//while(!controlPointIsClear())
+				//moveControlPointPerpendicular();
+			runAlgorithm();
+		}
+	}
+	
+	private Tuple<Point, Point> findFirstCollision(){
+		int curveSize = entireCurve.size();
+		for(int firstIndex = 0; firstIndex < curveSize; firstIndex++) {
+			Point p0 = entireCurve.get(firstIndex);
+			if(GridMap.positionResultsInCollision(p0.position)) {
+				for(int lastIndex = firstIndex; lastIndex < curveSize; lastIndex++) {
+					if(!GridMap.positionResultsInCollision(entireCurve.get(lastIndex).position)) {
+						return new Tuple<Point, Point>(p0, entireCurve.get(lastIndex - 1));
+					}
+				}
+			}
+		}
+		return null;
 	}
 	
 	private void calculateEntireCurve() {

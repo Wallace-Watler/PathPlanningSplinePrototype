@@ -44,4 +44,9 @@ public class GridMap {
 	public static Vector positionToGrid(Vector position) {
 		return new Vector((int) position.x >> COARSENESS, (int) position.y >> COARSENESS);
 	}
+	
+	public static boolean positionResultsInCollision(Vector position) {
+		Vector gridV = positionToGrid(position);
+		return obstacleMap[(int) gridV.x][(int) gridV.y];
+	}
 }
