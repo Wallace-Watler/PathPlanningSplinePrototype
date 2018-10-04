@@ -9,6 +9,11 @@ public class Vector implements Cloneable {
 		this.y = y;
 	}
 	
+	public Vector normalize() {
+		double r = Math.sqrt(x * x + y * y);
+		return new Vector(x / r, y / r);
+	}
+	
 	public Vector negate() {
 		return new Vector(-x, -y);
 	}
@@ -27,6 +32,10 @@ public class Vector implements Cloneable {
 	
 	public Vector divide(double d) {
 		return this.multiply(1 / d);
+	}
+	
+	public Vector normal() {
+		return new Vector(y, -x).normalize();
 	}
 	
 	@Override

@@ -24,7 +24,7 @@ public class Main extends Canvas implements Runnable {
 	private boolean running = false;
 	
 	public static List<Obstacle> obstacles;
-	public static Spline spline;
+	public static Spline baseSpline, actualSpline;
 	
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Spline-based path planning");
@@ -69,7 +69,8 @@ public class Main extends Canvas implements Runnable {
 		obstacles = new ArrayList<Obstacle>();
 		obstacles.add(new Obstacle(new Vector(500, 500), 15));
 		
-		spline = new Spline(new Vector(400, 800), new Vector(650, 200), new Vector(0, -100), new Vector(0, -100));
+		baseSpline = new Spline(new Vector(400, 800), new Vector(650, 200), new Vector(0, -800), new Vector(0, -800), false);
+		actualSpline = new Spline(new Vector(400, 800), new Vector(650, 200), new Vector(0, -800), new Vector(0, -800), true);
 	}
 	
 	public void run() {
@@ -101,7 +102,8 @@ public class Main extends Canvas implements Runnable {
 		GridMap.render(g);
 		for(Obstacle o : obstacles) o.render(g);
 		
-		spline.render(g);
+		baseSpline.render(g);
+		actualSpline.render(g);
 		
 		g.dispose();
 		bs.show();

@@ -5,7 +5,7 @@ import java.awt.Graphics;
 
 public class GridMap {
 
-	private static final int COARSENESS = 2;
+	private static final int COARSENESS = 0;
 	private static final int CELL_WIDTH = (int) Math.pow(2, COARSENESS);
 	private static final int OBSTACLE_DEFINITION = 1000;
 	private static final Color OBSTACLE_COLOR = new Color(127, 127, 255);
@@ -45,7 +45,7 @@ public class GridMap {
 		return new Vector((int) position.x >> COARSENESS, (int) position.y >> COARSENESS);
 	}
 	
-	public static boolean positionResultsInCollision(Vector position) {
+	public static boolean positionResultsInCollision(Vector position) throws ArrayIndexOutOfBoundsException {
 		Vector gridV = positionToGrid(position);
 		return obstacleMap[(int) gridV.x][(int) gridV.y];
 	}

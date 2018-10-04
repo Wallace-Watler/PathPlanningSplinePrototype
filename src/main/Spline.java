@@ -8,22 +8,28 @@ import java.util.List;
 
 public class Spline {
 
-	private static final Color SPLINE_COLOR = Color.CYAN;
+	private static final Color BASE_SPLINE_COLOR = Color.RED;
+	private static final Color ACTUAL_SPLINE_COLOR = Color.CYAN;
 	private static final double T_STEP = 0.001;
 	
 	private final List<Point> entireCurve;
 	private final List<Point> controlPoints;
+	private final Color color;
 	
-	public Spline(Vector startPos, Vector endPos, Vector startDir, Vector endDir) {
+	public Spline(Vector startPos, Vector endPos, Vector startDir, Vector endDir, boolean runAlgorithm) {
 		entireCurve = new ArrayList<Point>();
 		controlPoints = new LinkedList<Point>();
 		controlPoints.add(new Point(startPos.clone(), startDir.clone(), 0));
 		controlPoints.add(new Point(endPos.clone(), endDir.clone(), 1));
 		calculateEntireCurve();
+		if(runAlgorithm) {
+			color = ACTUAL_SPLINE_COLOR;
+			runAlgorithm();
+		}else color = BASE_SPLINE_COLOR;
 	}
 	
 	public void render(Graphics g) {
-		g.setColor(SPLINE_COLOR);
+		g.setColor(color);
 		Vector currentPosition, prevPosition = entireCurve.get(0).position.clone();
 		for(Point p : entireCurve) {
 			currentPosition = p.position.clone();
@@ -32,29 +38,14 @@ public class Spline {
 		}
 	}
 	
-	private void runAlgorithm() {
+	private boolean runAlgorithm() {
+		calculateEntireCurve();
 		Tuple<Point, Point> collision = findFirstCollision();
 		if(collision != null) {
-			//createControlPointMidway();
-			//while(!controlPointIsClear())
-				//moveControlPointPerpendicular();
-			runAlgorithm();
+			Point newControlPoint = createControlPointMidway(collision);
+			return moveControlPointPerpendicular(newControlPoint) ? runAlgorithm() : false;
 		}
-	}
-	
-	private Tuple<Point, Point> findFirstCollision(){
-		int curveSize = entireCurve.size();
-		for(int firstIndex = 0; firstIndex < curveSize; firstIndex++) {
-			Point p0 = entireCurve.get(firstIndex);
-			if(GridMap.positionResultsInCollision(p0.position)) {
-				for(int lastIndex = firstIndex; lastIndex < curveSize; lastIndex++) {
-					if(!GridMap.positionResultsInCollision(entireCurve.get(lastIndex).position)) {
-						return new Tuple<Point, Point>(p0, entireCurve.get(lastIndex - 1));
-					}
-				}
-			}
-		}
-		return null;
+		return true;
 	}
 	
 	private void calculateEntireCurve() {
@@ -95,6 +86,53 @@ public class Spline {
 				}
 			}
 			prevControlPoint = controlPoint.clone();
+		}
+	}
+	
+	private Tuple<Point, Point> findFirstCollision(){
+		int curveSize = entireCurve.size();
+		for(int firstIndex = 0; firstIndex < curveSize; firstIndex++) {
+			Point p0 = entireCurve.get(firstIndex);
+			if(GridMap.positionResultsInCollision(p0.position))
+				for(int lastIndex = firstIndex; lastIndex < curveSize; lastIndex++)
+					if(!GridMap.positionResultsInCollision(entireCurve.get(lastIndex).position))
+						return new Tuple<Point, Point>(p0, entireCurve.get(lastIndex - 1));
+		}
+		return null;
+	}
+	
+	private Point createControlPointMidway(Tuple<Point, Point> collision) {
+		Vector newPos = collision.x.position.add(collision.y.position).divide(2);
+		Vector newVel = collision.x.velocity.add(collision.y.velocity).divide(2);
+		Point newControlPoint = new Point(newPos, newVel, (collision.x.t + collision.y.t) / 2);
+		for(int i = 0; i < controlPoints.size(); i++)
+			if(newControlPoint.t < controlPoints.get(i).t) {
+				controlPoints.add(i, newControlPoint);
+				return controlPoints.get(i);
+			}
+		return null;
+	}
+	
+	private boolean moveControlPointPerpendicular(Point controlPoint) {
+		Vector moveDirection = controlPoint.velocity.normal();
+		for(int i = 1; true; i++) {
+			Vector p = controlPoint.position.add(moveDirection.multiply(i));
+			try {
+				if(!GridMap.positionResultsInCollision(p)) {
+					controlPoint.position = p;
+					return true;
+				}
+			} catch(ArrayIndexOutOfBoundsException e0) {
+				p = controlPoint.position.add(moveDirection.multiply(-i));
+				try {
+					if(!GridMap.positionResultsInCollision(p)) {
+						controlPoint.position = p;
+						return true;
+					}
+				} catch(ArrayIndexOutOfBoundsException e1) {
+					return false;
+				}
+			}
 		}
 	}
 	
