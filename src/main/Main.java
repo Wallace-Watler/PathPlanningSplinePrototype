@@ -18,7 +18,7 @@ public class Main extends Canvas implements Runnable {
 	public static final Color BACKGROUND_COLOR = Color.DARK_GRAY;
 	public static final int HEIGHT = 1024, WIDTH = 1024;
 	
-	public static final double ROBOT_WIDTH = 50;
+	public static final double ROBOT_WIDTH = 70;
 	
 	private Thread thread;
 	private boolean running = false;
@@ -69,8 +69,8 @@ public class Main extends Canvas implements Runnable {
 		obstacles = new ArrayList<Obstacle>();
 		obstacles.add(new Obstacle(new Vector(500, 500), 15));
 		
-		baseSpline = new Spline(new Vector(400, 800), new Vector(650, 200), new Vector(0, -800), new Vector(0, -800), false);
-		actualSpline = new Spline(new Vector(400, 800), new Vector(650, 200), new Vector(0, -800), new Vector(0, -800), true);
+		baseSpline = new Spline(new Vector(400, 800), new Vector(650, 200), new Vector(0, -100), new Vector(0, -100), false);
+		actualSpline = new Spline(new Vector(400, 800), new Vector(650, 200), new Vector(0, -100), new Vector(0, -100), true);
 	}
 	
 	public void run() {

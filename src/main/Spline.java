@@ -3,13 +3,13 @@ package main;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class Spline {
 
 	private static final Color BASE_SPLINE_COLOR = Color.RED;
 	private static final Color ACTUAL_SPLINE_COLOR = Color.CYAN;
+	private static final double CONTROL_POINT_MIN_RADIUS_SQR = Math.pow(20, 2);
 	private static final double T_STEP = 0.001;
 	
 	private final List<Point> entireCurve;
@@ -18,7 +18,7 @@ public class Spline {
 	
 	public Spline(Vector startPos, Vector endPos, Vector startDir, Vector endDir, boolean runAlgorithm) {
 		entireCurve = new ArrayList<Point>();
-		controlPoints = new LinkedList<Point>();
+		controlPoints = new ArrayList<Point>();
 		controlPoints.add(new Point(startPos.clone(), startDir.clone(), 0));
 		controlPoints.add(new Point(endPos.clone(), endDir.clone(), 1));
 		calculateEntireCurve();
@@ -108,31 +108,43 @@ public class Spline {
 		for(int i = 0; i < controlPoints.size(); i++)
 			if(newControlPoint.t < controlPoints.get(i).t) {
 				controlPoints.add(i, newControlPoint);
+				removeCloseControlPoints(i);
 				return controlPoints.get(i);
 			}
 		return null;
 	}
 	
+	private void removeCloseControlPoints(int index) {
+		Vector controlPointPos = controlPoints.get(index).position;
+		Point prevPoint = controlPoints.get(index - 1);
+		Point nextPoint = controlPoints.get(index + 1);
+		if(Math.pow(prevPoint.position.x - controlPointPos.x, 2) + Math.pow(prevPoint.position.y - controlPointPos.y, 2) < CONTROL_POINT_MIN_RADIUS_SQR) {
+			controlPoints.remove(prevPoint);
+		}
+		if(Math.pow(nextPoint.position.x - controlPointPos.x, 2) + Math.pow(nextPoint.position.y - controlPointPos.y, 2) < CONTROL_POINT_MIN_RADIUS_SQR) {
+			controlPoints.remove(nextPoint);
+		}
+	}
+	
 	private boolean moveControlPointPerpendicular(Point controlPoint) {
 		Vector moveDirection = controlPoint.velocity.normal();
 		for(int i = 1; true; i++) {
-			Vector p = controlPoint.position.add(moveDirection.multiply(i));
+			int exceptionCounter = 0;
 			try {
-				if(!GridMap.positionResultsInCollision(p)) {
-					controlPoint.position = p;
+				Vector p0 = controlPoint.position.add(moveDirection.multiply(i));
+				if(!GridMap.positionResultsInCollision(p0)) {
+					controlPoint.position = p0;
 					return true;
 				}
-			} catch(ArrayIndexOutOfBoundsException e0) {
-				p = controlPoint.position.add(moveDirection.multiply(-i));
-				try {
-					if(!GridMap.positionResultsInCollision(p)) {
-						controlPoint.position = p;
-						return true;
-					}
-				} catch(ArrayIndexOutOfBoundsException e1) {
-					return false;
+			} catch(ArrayIndexOutOfBoundsException e) { exceptionCounter++; }
+			try {
+				Vector p1 = controlPoint.position.add(moveDirection.multiply(-i));
+				if(!GridMap.positionResultsInCollision(p1)) {
+					controlPoint.position = p1;
+					return true;
 				}
-			}
+			} catch(ArrayIndexOutOfBoundsException e) { exceptionCounter++; }
+			if(exceptionCounter == 2) return false;
 		}
 	}
 	
