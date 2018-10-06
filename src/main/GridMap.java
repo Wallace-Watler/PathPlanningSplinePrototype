@@ -7,7 +7,6 @@ public class GridMap {
 
 	private static final int COARSENESS = 0;
 	private static final int CELL_WIDTH = (int) Math.pow(2, COARSENESS);
-	private static final int OBSTACLE_DEFINITION = 1000;
 	private static final Color OBSTACLE_COLOR = new Color(127, 127, 255);
 	
 	private static boolean obstacleMap[][];
@@ -29,15 +28,16 @@ public class GridMap {
 	
 	public static void registerObstacle(Obstacle o) {
 		Vector location = o.getLocation().clone();
-		double safeDistance = o.getRadius() + Main.ROBOT_WIDTH;
+		Vector gridLocation = positionToGrid(location);
+		double safeDistance = o.getRadius() + Main.ROBOT_WIDTH + CELL_WIDTH / Math.sqrt(2);
+		int gridRadiusToCheck = (int) Math.ceil(safeDistance) >> COARSENESS;
 		
-		for(int r = 0; r <= OBSTACLE_DEFINITION; r++)
-			for(int theta = 0; theta < OBSTACLE_DEFINITION; theta++) {
-				double rScaled = safeDistance * r / OBSTACLE_DEFINITION;
-				double thetaScaled = 2 * Math.PI * theta / OBSTACLE_DEFINITION;
-				Vector v = new Vector(rScaled * Math.cos(thetaScaled), rScaled * Math.sin(thetaScaled)).add(location);
-				Vector gridV = positionToGrid(v);
-				obstacleMap[(int) gridV.x][(int) gridV.y] = true;
+		for(int j = (int) gridLocation.y - gridRadiusToCheck; j <= (int) gridLocation.y + gridRadiusToCheck; j++)
+			for(int i = (int) gridLocation.x - gridRadiusToCheck; i <= (int) gridLocation.x + gridRadiusToCheck; i++) {
+				Vector cellCenter = new Vector((i << COARSENESS) + CELL_WIDTH / 2.0, (j << COARSENESS) + CELL_WIDTH / 2.0);
+				try {
+					obstacleMap[i][j] = cellCenter.subtract(location).length() <= safeDistance;
+				} catch(ArrayIndexOutOfBoundsException e) {}
 			}
 	}
 	

@@ -9,7 +9,7 @@ public class Spline {
 
 	private static final Color BASE_SPLINE_COLOR = Color.RED;
 	private static final Color ACTUAL_SPLINE_COLOR = Color.CYAN;
-	private static final double CONTROL_POINT_MIN_RADIUS_SQR = Math.pow(20, 2);
+	private static final double CONTROL_POINT_MIN_RADIUS_SQR = Math.pow(150, 2);
 	private static final double T_STEP = 0.001;
 	
 	private final List<Point> entireCurve;

@@ -9,8 +9,12 @@ public class Vector implements Cloneable {
 		this.y = y;
 	}
 	
+	public double length() {
+		return Math.sqrt(x * x + y * y);
+	}
+	
 	public Vector normalize() {
-		double r = Math.sqrt(x * x + y * y);
+		double r = length();
 		return new Vector(x / r, y / r);
 	}
 	
