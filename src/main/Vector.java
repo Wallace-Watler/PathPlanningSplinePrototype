@@ -38,6 +38,10 @@ public class Vector implements Cloneable {
 		return new Vector(y, -x).normalize();
 	}
 	
+	public static Vector average(Vector v1, Vector v2) {
+		return v1.add(v2).divide(2);
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if(!(o instanceof Vector)) return false;

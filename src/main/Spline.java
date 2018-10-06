@@ -102,14 +102,14 @@ public class Spline {
 	}
 	
 	private Point createControlPointMidway(Tuple<Point, Point> collision) {
-		Vector newPos = collision.x.position.add(collision.y.position).divide(2);
-		Vector newVel = collision.x.velocity.add(collision.y.velocity).divide(2);
+		Vector newPos = Vector.average(collision.x.position, collision.y.position);
+		Vector newVel = Vector.average(collision.x.velocity, collision.y.velocity);
 		Point newControlPoint = new Point(newPos, newVel, (collision.x.t + collision.y.t) / 2);
 		for(int i = 0; i < controlPoints.size(); i++)
 			if(newControlPoint.t < controlPoints.get(i).t) {
 				controlPoints.add(i, newControlPoint);
 				removeCloseControlPoints(i);
-				return controlPoints.get(i);
+				return newControlPoint;
 			}
 		return null;
 	}

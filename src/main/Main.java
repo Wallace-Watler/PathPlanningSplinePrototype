@@ -18,7 +18,7 @@ public class Main extends Canvas implements Runnable {
 	public static final Color BACKGROUND_COLOR = Color.DARK_GRAY;
 	public static final int HEIGHT = 1024, WIDTH = 1024;
 	
-	public static final double ROBOT_WIDTH = 70;
+	public static final double ROBOT_WIDTH = 50;
 	
 	private Thread thread;
 	private boolean running = false;
