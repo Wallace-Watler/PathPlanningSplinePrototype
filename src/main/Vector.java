@@ -1,5 +1,8 @@
 package main;
 
+/**
+ * Mathematical representation of a 2D vector.
+ */
 public class Vector implements Cloneable {
 
 	public double x, y;

@@ -3,6 +3,9 @@ package main;
 import java.awt.Color;
 import java.awt.Graphics;
 
+/**
+ * Represents an obstacle that may be in the way of the robot.
+ */
 public class Obstacle {
 
 	public static final Color OBSTACLE_COLOR = Color.LIGHT_GRAY;

@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.JFrame;
 
@@ -20,6 +21,7 @@ public class Main extends Canvas implements Runnable {
 	
 	public static final double ROBOT_WIDTH = 50;
 	
+	private Random random;
 	private Thread thread;
 	private boolean running = false;
 	
@@ -64,13 +66,17 @@ public class Main extends Canvas implements Runnable {
 	public void init() {
 		this.createBufferStrategy(3);
 		
+		random = new Random();
+		
 		GridMap.initializeMap();
 		
 		obstacles = new ArrayList<Obstacle>();
-		obstacles.add(new Obstacle(new Vector(500, 500), 15));
+		for(int i = 0; i < 5; i++) {
+			obstacles.add(new Obstacle(new Vector(1000 * random.nextDouble(), 1000 * random.nextDouble()), 63 * random.nextDouble() + 1));
+		}
 		
-		baseSpline = new Spline(new Vector(400, 800), new Vector(650, 200), new Vector(0, -100), new Vector(0, -100), false);
-		actualSpline = new Spline(new Vector(400, 800), new Vector(650, 200), new Vector(0, -100), new Vector(0, -100), true);
+		baseSpline = new Spline(new Vector(50, 950), new Vector(950, 50), new Vector(0, -100), new Vector(0, -100), false);
+		actualSpline = new Spline(new Vector(50, 950), new Vector(950, 50), new Vector(0, -100), new Vector(0, -100), true);
 	}
 	
 	public void run() {
