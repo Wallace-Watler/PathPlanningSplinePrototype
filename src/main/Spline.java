@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Mathematical representation of a cubic Hermite spline curve.
+ * Mathematical representation of a piecewise cubic Hermite spline curve.
  */
 public class Spline {
 
@@ -53,9 +53,9 @@ public class Spline {
 	 * Runs the path-finding algorithm on the spline curve.<br>
 	 * <br>
 	 * After calculating the entire path, it finds the first collision and places
-	 * a new control point on the midpoint of the collision. It then moves it perpendicular
-	 * to the path until it lies outside of the collision zone. The algorithm is then
-	 * recursively called on the resulting spline until there are no collisions.
+	 * a new control point on the midpoint of the collision. It then moves that point
+	 * perpendicular to the path until it lies outside of the collision zone. The algorithm is
+	 * then recursively called on the resulting spline until there are no collisions.
 	 * @return If the algorithm successfully found a clear path.
 	 */
 	private boolean runAlgorithm() {
